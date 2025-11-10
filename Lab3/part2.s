@@ -510,7 +510,7 @@ set_speed_leds:
 
     // Build LED mask
     CMP R4, #10
-    MOVGE A1, #0x3FF            // All 10 LEDs
+    LDRGE A1, =0x3FF            // All 10 LEDs
     BGE set_leds_write
 
     MOV A1, #1
