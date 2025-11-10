@@ -566,7 +566,7 @@ hex_base0:
     LDR R6, =HEX_BASE0
 
 hex_write:
-    STRB R5, [R6, R4]
+    STR R5, [R6, R4, LSL #2]
 
     POP {R4-R6, PC}
 
