@@ -47,27 +47,27 @@ HEX_CODES:
     .byte 0b00111001, 0b01011110, 0b01111001, 0b01110001  // C, d, E, F
 
 // Timer load values for different speeds
-// 200 MHz clock: {1/16, 1/8, 1/4, 1/2, 1} second intervals
+// 200 MHz clock: speed 0=slowest (1s), speed 4=fastest (1/16s)
 TIMER_LOADS:
-    .word 12500000      // 1/16 second (speed 0)
-    .word 25000000      // 1/8 second (speed 1)
+    .word 200000000     // 1 second (speed 0 - slowest)
+    .word 100000000     // 1/2 second (speed 1)
     .word 50000000      // 1/4 second (speed 2) - default
-    .word 100000000     // 1/2 second (speed 3)
-    .word 200000000     // 1 second (speed 4)
+    .word 25000000      // 1/8 second (speed 3)
+    .word 12500000      // 1/16 second (speed 4 - fastest)
 
-// Messages
+// Messages (padded to minimum 6 characters with blanks for rotation)
 MSG_C0FFEE:    .byte 0x39, 0x3F, 0x71, 0x71, 0x79, 0x79  // C0FFEE (6 chars)
-MSG_CAFE5:     .byte 0x39, 0x77, 0x71, 0x79, 0x6D        // CAFE5 (5 chars)
-MSG_CAB5:      .byte 0x39, 0x77, 0x7C, 0x6D              // CAb5 (4 chars)
-MSG_ACE:       .byte 0x77, 0x39, 0x79                    // ACE (3 chars)
+MSG_CAFE5:     .byte 0x39, 0x77, 0x71, 0x79, 0x6D, 0x00  // CAFE5  (5 chars + 1 blank)
+MSG_CAB5:      .byte 0x39, 0x77, 0x7C, 0x6D, 0x00, 0x00  // CAb5   (4 chars + 2 blanks)
+MSG_ACE:       .byte 0x77, 0x39, 0x79, 0x00, 0x00, 0x00  // ACE    (3 chars + 3 blanks)
 MSG_70AD570015: .byte 0x07, 0x3F, 0x77, 0x5E, 0x6D, 0x07, 0x3F, 0x3F, 0x06, 0x6D  // 70Ad570015 (10 chars)
 MSG_LONG:      .byte 0x39, 0x77, 0x71, 0x79, 0x00, 0x7C, 0x79, 0x79, 0x71, 0x00, 0x39, 0x3F, 0x71, 0x71, 0x79, 0x79  // CAFE bEEF C0FFEE (16 chars)
 
-// Message lengths
+// Message lengths (short messages padded to 6 for rotation)
 MSG_LEN_C0FFEE:     .word 6
-MSG_LEN_CAFE5:      .word 5
-MSG_LEN_CAB5:       .word 4
-MSG_LEN_ACE:        .word 3
+MSG_LEN_CAFE5:      .word 6
+MSG_LEN_CAB5:       .word 6
+MSG_LEN_ACE:        .word 6
 MSG_LEN_70AD570015: .word 10
 MSG_LEN_LONG:       .word 16
 
@@ -250,17 +250,17 @@ apply_message:
 
 msg_cafe5:
     LDR R4, =MSG_CAFE5
-    LDR R5, =5
+    LDR R5, =6
     B apply_msg_update
 
 msg_cab5:
     LDR R4, =MSG_CAB5
-    LDR R5, =4
+    LDR R5, =6
     B apply_msg_update
 
 msg_ace:
     LDR R4, =MSG_ACE
-    LDR R5, =3
+    LDR R5, =6
     B apply_msg_update
 
 msg_70ad:
@@ -549,11 +549,16 @@ display_done:
     POP {R4-R6, PC}
 
 // ==================== Helper: Write single HEX digit ====================
+// Digit index 0 maps to HEX5 (leftmost), digit 5 maps to HEX0 (rightmost)
 HEX_write_digit:
     PUSH {R4-R6, LR}
     MOV R4, A1                  // digit index (0-5)
     MOV R5, A2                  // segment code
 
+    // Reverse the mapping: physical_hex = 5 - digit_index
+    RSB R4, R4, #5
+
+    // Determine base address and offset
     CMP R4, #4
     BLT hex_base0
 
