@@ -571,7 +571,7 @@ hex_base0:
     LDR R6, =HEX_BASE0
 
 hex_write:
-    STR R5, [R6, R4, LSL #2]
+    STR R5, [R6, R4, LSL #4]    // LSL #4 = multiply by 16 for 0x10 spacing
 
     POP {R4-R6, PC}
 
