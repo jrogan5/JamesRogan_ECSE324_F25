@@ -1,0 +1,53 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{newtxtext,newtxmath}
+\usepackage[final,protrusion=true,expansion=true]{microtype}
+\usepackage{graphicx,booktabs,caption,enumitem,titlesec,titling}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1.2em}
+\titleformat{\section}{\bfseries}{\thesection}{0.6em}{}   
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+\setlist{nosep,leftmargin=*,itemsep=0pt,topsep=2pt}
+\captionsetup{font=small,labelfont=bf,aboveskip=4pt,belowskip=0pt}
+\setlength{\tabcolsep}{5pt}
+\raggedbottom
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+\textbf{James Rogan, 261157151. Fall 2025}\\
+\textbf{ECSE 324 Lab 3 Report}\\
+\textbf{Comprative analysis of polling and interupts/timers in ARMv7 Assembly}
+\end{center}
+
+\section{Introduction}
+An interactive rotating hex display was implemented in \textit{ARMv7 assembly} using both polling and interrupts/timers and profiled on \textit{CPUlator}. 
+
+\section{Methodology} % TODO, describe the methodology used to implement and profile the code
+
+\section{Results} % TODO, maybe add multiplr tables of results
+\begin{table}[h]
+\centering
+\caption{Example table for comparisons of the metrics that CPUlator provides}
+\begin{tabular}{lrrrr}
+\hline
+\textbf{Metric} & \textbf{...} & \textbf{...} & \textbf{Improvement} \\
+\hline
+Executed instructions &    &  & 3.29$\times$ \\
+Data loads            &   &  & 3.97$\times$ \\
+Data stores           &   &      & 3.93$\times$ \\
+Code size (bytes)     &   &      & 2.38$\times$ \\
+Simulated MIPS     &   &      & 3.29$\times$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Comparison of clock cycles (or other title)} % TODO compare clock cycles
+
+\section{Discussion} % TODO complete according to the 
+
+\section{Conclusion} % TODO complete according to appropriate conclusions from the data
+
+\end{document}
