@@ -25,7 +25,59 @@
 \section{Introduction}
 An interactive rotating hex display was implemented in \textit{ARMv7 assembly} using both polling and interrupts/timers and profiled on \textit{CPUlator}. 
 
-\section{Methodology} % TODO, describe the methodology used to implement and profile the code
+\section{Methodology}
+
+\subsection{Time Fraction Measurement}
+
+To measure what fraction of time is spent on different activities, we use the total \textit{instructions executed} as a proxy for elapsed time. While not perfectly accurate (since different instructions take different cycles on real hardware), the emulator uniformly reports instruction counts, making this a practical metric.
+
+\subsubsection{Measurement Approach}
+
+The methodology uses CPUlator's debugger breakpoints to establish instruction count checkpoints at key program locations:
+
+\begin{enumerate}
+    \item \textbf{Identify key code regions}:
+    \begin{itemize}
+        \item Interrupt service routine (ISR) entry point
+        \item ISR exit point
+        \item Slider switch polling loop entry
+        \item Slider switch polling loop exit
+        \item Main/IDLE code regions
+    \end{itemize}
+
+    \item \textbf{Place strategic breakpoints}: Set breakpoints at entry and exit points of each region of interest.
+
+    \item \textbf{Record instruction counts}: Note the cumulative instruction count displayed by CPUlator at each breakpoint.
+
+    \item \textbf{Calculate region instruction counts}:
+    \begin{itemize}
+        \item Instructions in ISR = (ISR exit count) -- (ISR entry count)
+        \item Instructions in polling = (polling exit count) -- (polling entry count)
+        \item Instructions in user/IDLE code = Total -- Instructions in ISR -- Instructions in polling
+    \end{itemize}
+
+    \item \textbf{Calculate time fractions}:
+    \begin{align}
+        \text{Fraction}_{\text{ISR}} &= \frac{\text{Instructions}_{\text{ISR}}}{\text{Total Instructions}} \\
+        \text{Fraction}_{\text{polling}} &= \frac{\text{Instructions}_{\text{polling}}}{\text{Total Instructions}} \\
+        \text{Fraction}_{\text{IDLE/user}} &= \frac{\text{Instructions}_{\text{IDLE/user}}}{\text{Total Instructions}}
+    \end{align}
+\end{enumerate}
+
+\subsubsection{Practical Implementation}
+
+In CPUlator:
+\begin{enumerate}
+    \item Run the program to a representative steady state (allow several cycles of activity)
+    \item Set a breakpoint at the start of the ISR
+    \item Record the starting instruction count before sampling begins
+    \item Sample for a fixed duration (e.g., 1,000,000 or 10,000,000 total instructions)
+    \item Place breakpoints within interrupt handlers and polling loops
+    \item Let the program run to completion while collecting checkpoint data
+    \item Calculate the instruction deltas for each region
+\end{enumerate}
+
+This approach leverages the emulator's cycle-accurate instruction counting to provide reproducible measurements without requiring external profiling tools.
 
 \section{Results} % TODO, maybe add multiplr tables of results
 \begin{table}[h]
