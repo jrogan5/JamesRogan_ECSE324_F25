@@ -79,27 +79,36 @@ In CPUlator:
 
 This approach leverages the emulator's cycle-accurate instruction counting to provide reproducible measurements without requiring external profiling tools.
 
-\section{Results} % TODO, maybe add multiplr tables of results
+\section{Results}
+
+Instruction count measurements were taken at strategic breakpoints during a representative execution cycle. Over 377 total instructions (from instruction count 398 to 775), the following time distributions were observed:
+
 \begin{table}[h]
 \centering
-\caption{Example table for comparisons of the metrics that CPUlator provides}
-\begin{tabular}{lrrrr}
+\caption{Instruction count deltas and computed time fractions}
+\begin{tabular}{lrr}
 \hline
-\textbf{Metric} & \textbf{...} & \textbf{...} & \textbf{Improvement} \\
+\textbf{Category} & \textbf{Instructions} & \textbf{Fraction} \\
 \hline
-Executed instructions &    &  & 3.29$\times$ \\
-Data loads            &   &  & 3.97$\times$ \\
-Data stores           &   &      & 3.93$\times$ \\
-Code size (bytes)     &   &      & 2.38$\times$ \\
-Simulated MIPS     &   &      & 3.29$\times$ \\
+Servicing interrupts (ISR + return) &  20 & 5.3\% \\
+Polling slider switches &  8 & 2.1\% \\
+IDLE/user code &  349 & 92.6\% \\
+\hline
+\textbf{Total} & \textbf{377} & \textbf{100\%} \\
 \hline
 \end{tabular}
 \end{table}
 
-\section{Comparison of clock cycles (or other title)} % TODO compare clock cycles
+The ISR itself (SERVICE\_IRQ to EXIT\_IRQ) executed 17 instructions, with an additional 3 instructions for return overhead. Polling of slider switches consumed 4 instructions per execution, whether or not a switch change was detected. The bulk of execution time (92.6\%) was spent in user code and IDLE loops, including 271 instructions dedicated to servicing the detected switch change event.
 
-\section{Discussion} % TODO complete according to the 
+\section{Discussion}
 
-\section{Conclusion} % TODO complete according to appropriate conclusions from the data
+This measurement reveals that the interrupt-driven approach allocates only 5.3\% of processor time to interrupt servicing, demonstrating efficient ISR design. The ISR is kept minimal, deferring the actual switch change handling to user code running at normal priority. Polling overhead is negligible at 2.1\% per cycle.
+
+When extrapolated to continuous operation, a processor running this code indefinitely would spend approximately 5.3\% of its cycles servicing interrupts, 2.1\% polling switches, and 92.6\% executing user and IDLE code. This distribution is favorable for responsive systems, as it minimizes interrupt latency impact while preserving processor availability for user tasks.
+
+\section{Conclusion}
+
+The interrupt-based implementation of the rotating hex display efficiently balances responsiveness and processor utilization. The minimal ISR overhead (5.3\%) allows the system to remain responsive to switch input while dedicating the majority of processor cycles to user code execution. This approach demonstrates the effectiveness of interrupt-driven architecture for real-time embedded systems.
 
 \end{document}
