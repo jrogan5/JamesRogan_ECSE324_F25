@@ -81,6 +81,8 @@ This approach leverages the emulator's cycle-accurate instruction counting to pr
 
 \section{Results}
 
+\begin{table}[h] \centering \caption{Executed Instructions data for various break points} \begin{tabular}{lrrrr} \hline \textbf{Breakpoint} & \textbf{Executed instructions}\ \hline \texttt{IDLE} (before polling switches) & 398 \ \texttt{IDLE} (after polling switches; switches changed) & 402 \ \texttt{IDLE} (return from servicing switch change; before polling switches) & 673 \ \texttt{SERVICE_IRQ} & 674 \ \texttt{EXIT_IRQ} & 691 \ \texttt{IDLE} (return from IRQ; before polling switches) & 694 \ \texttt{IDLE} (after polling switches; no change) & 698 \ \texttt{IDLE} (loop back; before polling switches) & 775 \ \hline \end{tabular} \end{table}
+
 Instruction count measurements were taken at strategic breakpoints during a representative execution cycle. Over 377 total instructions (from instruction count 398 to 775), the following time distributions were observed:
 
 \begin{table}[h]
