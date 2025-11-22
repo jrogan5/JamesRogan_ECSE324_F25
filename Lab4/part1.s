@@ -66,6 +66,8 @@ draw_point_exit:
 /*
  * VGA_clear_pixelbuff_ASM - Clear entire pixel buffer to black
  * C Prototype: void VGA_clear_pixelbuff_ASM();
+ * Arguments: none
+ * Returns: none
  *
  * TODO: YOU IMPLEMENT THIS
  * INSTRUCTIONS:
@@ -80,31 +82,23 @@ draw_point_exit:
  */
 VGA_clear_pixelbuff_ASM:
     push {r4, r5, r6, lr}
-
-    // TODO: Initialize y counter (r4) to 0
-
+    mov r4, #0 // y
 clear_pixel_y_loop:
-    // TODO: Compare r4 with PIXEL_HEIGHT (240)
-    // TODO: If r4 >= 240, branch to clear_pixel_exit
-
-    // TODO: Initialize x counter (r5) to 0
-
+    cmp r4, =PIXEL_HEIGHT // 240
+    bge clear_pixel_exit
+    mov r5 , #0 // x
 clear_pixel_x_loop:
-    // TODO: Compare r5 with PIXEL_WIDTH (320)
-    // TODO: If r5 >= 320, branch to clear_pixel_next_y
-
-    // TODO: Set r0 = r5 (x coordinate)
-    // TODO: Set r1 = r4 (y coordinate)
-    // TODO: Set r2 = 0 (black color)
-    // TODO: Call VGA_draw_point_ASM
-
-    // TODO: Increment r5 (x counter)
-    // TODO: Branch back to clear_pixel_x_loop
+    cmp r5, =PIXEL_WIDTH  // 320
+    bge clear_pixel_next_y
+    ldr r0, r5 // x
+    ldr r1, r4 // y
+    mov r2, #0 // pixel value: cleared
+    bl VGA_draw_point_ASM
+    add r5, r5, #1
+    b clear_pixel_x_loop
 
 clear_pixel_next_y:
-    // TODO: Increment r4 (y counter)
-    // TODO: Branch back to clear_pixel_y_loop
-
+    add r4, r4, #1
 clear_pixel_exit:
     pop {r4, r5, r6, pc}
 
@@ -161,9 +155,25 @@ write_char_exit:
  */
 VGA_clear_charbuff_ASM:
     push {r4, r5, r6, lr}
+    mov r4, #0 // y
+.clear_char_y_loop:
+    cmp r4, =char_HEIGHT // 240
+    bge .clear_char_exit
+    mov r5 , #0 // x
+.clear_char_x_loop:
+    cmp r5, =char_WIDTH  // 320
+    bge.clear_char_next_y
+    ldr r0, r5 // x
+    ldr r1, r4 // y
+    mov r2, #0 // char value: null
+    bl VGA_write_char_ASM
+    add r5, r5, #1
+    b .clear_char_x_loop
 
-    // TODO: Implement nested loops to clear character buffer
-    // Same pattern as VGA_clear_pixelbuff_ASM but with CHAR_HEIGHT/CHAR_WIDTH
+.clear_char_next_y:
+    add r4, r4, #1
+.clear_char_exit:
+    pop {r4, r5, r6, pc}
 
     pop {r4, r5, r6, pc}
 
